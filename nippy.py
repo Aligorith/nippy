@@ -18,6 +18,7 @@ from PyQt4.QtGui import QColor, QFont, QFontMetrics
 
 class NippyEdit(QsciScintilla):
 	ARROW_MARKER_NUM = 8
+	ARROW_MARKER_MASK = 256 # XXX: hardcoded for now - dunno why!
 	
 	# ctor
 	# < fileN: (str) name of file
@@ -111,9 +112,24 @@ class NippyEdit(QsciScintilla):
 	# Bind shortcuts
 	def bind_events(self):
 		self.keymap = {
-			'Ctrl+n'	: self.new_file,
-			'Ctrl+o' 	: self.open_file,
-			'Ctrl+s'	: self.save_file,
+			# file management
+			'Ctrl+N'		: self.new_file,
+			'Ctrl+O' 		: self.open_file,
+			'Ctrl+S'		: self.save_file,
+			
+			'F1'			: self.open_file,
+			
+			# view
+			# TODO: normal pluskey doesn't work
+			'Ctrl+Plus'		: self.zoomIn,
+			'Ctrl+Minus'	: self.zoomOut,
+			
+			# go to line
+			'Ctrl+G'		: self.goto_line_tool,
+			
+			# go to marker
+			'F2'			: self.goto_next_bookmark,
+			'Shift+F2'		: self.goto_prev_bookmark,
 		}
 		
 		for key, cmd in self.keymap.items():
@@ -183,6 +199,60 @@ class NippyEdit(QsciScintilla):
 		else:
 			self.markerAdd(nline, self.ARROW_MARKER_NUM)
 			self.bookmarks.add(nline)
+			
+	# Helper method to go to a line
+	# < line: (int) zero-based index for line number to navigate to
+	def goto_line(self, line):
+		# Find first non-blank on that line
+		# NOTE: This shouldn't be too bad, unless the line is too long...
+		#       We define "too long" as anything longer than most style guides recommend
+		line_text = str(self.text(line))
+		
+		if len(line_text) < 200:
+			offset = len(line_text) - len(line_text.lstrip())
+		else:
+			offset = 0
+		
+		# go to that point
+		self.setCursorPosition(line, offset)
+			
+	# Jump to next bookmark
+	def goto_next_bookmark(self):
+		curLine, curPos = self.getCursorPosition()
+		
+		# wrap around if we don't go anywhere
+		line = self.markerFindNext(curLine + 1, self.ARROW_MARKER_MASK)
+		if line == -1:
+			line = self.markerFindNext(0, self.ARROW_MARKER_MASK)
+			
+		self.goto_line(line)
+	
+	# Jump to previous bookmark
+	def goto_prev_bookmark(self):
+		curLine, curPos = self.getCursorPosition()
+		
+		# wrap around if we don't go anywhere
+		line = self.markerFindPrevious(curLine - 1, self.ARROW_MARKER_MASK)
+		if line == -1:
+			line = self.markerFindPrevious(self.lines() - 1, self.ARROW_MARKER_MASK)
+		
+		self.goto_line(line)
+	
+	# Tool to go to the specified line
+	def goto_line_tool(self):
+		curLine, curPos = self.getCursorPosition()
+		totLines = self.lines()
+		
+		# TODO: replace this with a custom dialog
+		line, ok = qgui.QInputDialog.getInt(self, "Go To Line...",
+						"Current Line: %d / %d" % (curLine + 1, totLines),
+						curLine,
+						1, totLines)
+		
+		if ok:
+			# NOTE: for display, the numbers start from 1, but the API starts from 0
+			self.goto_line(line - 1)
+			self.setFocus(True)
 
 
 ################################################
