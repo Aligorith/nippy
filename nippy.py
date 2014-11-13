@@ -128,6 +128,8 @@ class NippyEdit(QsciScintilla):
 			'Ctrl+G'		: self.goto_line_tool,
 			
 			# go to marker
+			'Ctrl+F2'		: self.toggle_bookmark,
+			
 			'F2'			: self.goto_next_bookmark,
 			'Shift+F2'		: self.goto_prev_bookmark,
 		}
@@ -193,12 +195,21 @@ class NippyEdit(QsciScintilla):
 	# Click in margin - For now, this is for bookmarking only
 	def on_margin_clicked(self, nmargin, nline, modifiers):
 		# Toggle marker for the line the margin was clicked on
-		if self.markersAtLine(nline) != 0:
-			self.markerDelete(nline, self.ARROW_MARKER_NUM)
-			self.bookmarks.remove(nline)
+		self.toggle_bookmark(nline)
+			
+	# Toggle bookmark on line
+	# < (line): (int) line number, zero-indexed - current line is used if not provided
+	def toggle_bookmark(self, line=None):
+		if line is None:
+			line = self.getCursorPosition()[0]
+		
+		if self.markersAtLine(line) != 0:
+			self.markerDelete(line, self.ARROW_MARKER_NUM)
+			self.bookmarks.remove(line)
 		else:
-			self.markerAdd(nline, self.ARROW_MARKER_NUM)
-			self.bookmarks.add(nline)
+			self.markerAdd(line, self.ARROW_MARKER_NUM)
+			self.bookmarks.add(line)
+			
 			
 	# Helper method to go to a line
 	# < line: (int) zero-based index for line number to navigate to
