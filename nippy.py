@@ -51,8 +51,8 @@ class NippyEdit(QsciScintilla):
 	# Configure editor
 	def setup_ui(self):
 		# Set the default font
-		font = QFont()
-		font.setFamily('Courier')
+		font = QFont('Consolas')
+		#font.setFamily('Courier')
 		font.setFixedPitch(True)
 		font.setPointSize(10)
 		self.setFont(font)
