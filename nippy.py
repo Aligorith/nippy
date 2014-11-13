@@ -13,6 +13,10 @@ from PyQt4.Qsci import QsciScintilla
 
 from PyQt4.QtGui import QColor, QFont, QFontMetrics
 
+
+import signal
+signal.signal(signal.SIGINT, signal.SIG_DFL)
+
 ################################################
 # Nippy Editor
 
