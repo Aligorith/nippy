@@ -17,8 +17,8 @@ from PyQt4.QtGui import QColor, QFont, QFontMetrics
 # Nippy Editor
 
 class NippyEdit(QsciScintilla):
-	ARROW_MARKER_NUM = 8
-	ARROW_MARKER_MASK = 256 # XXX: hardcoded for now - dunno why!
+	BOOKMARK_MARKER_NUM = 8
+	BOOKMARK_MARKER_MASK = 256 # XXX: hardcoded for now - dunno why!
 	
 	# ctor
 	# < fileN: (str) name of file
@@ -64,8 +64,8 @@ class NippyEdit(QsciScintilla):
 		# Clickable margin 1 for showing markers
 		self.setMarginSensitivity(1, True)
 		self.marginClicked.connect(self.on_margin_clicked)
-		self.markerDefine(QsciScintilla.RightArrow, self.ARROW_MARKER_NUM)
-		self.setMarkerBackgroundColor(QColor("#ee1111"), self.ARROW_MARKER_NUM)
+		self.markerDefine(QsciScintilla.RightArrow, self.BOOKMARK_MARKER_NUM)
+		self.setMarkerBackgroundColor(QColor("#ee1111"), self.BOOKMARK_MARKER_NUM)
 		
 		# Brace matching: enable for a brace immediately before or after
 		# the current position
@@ -204,10 +204,10 @@ class NippyEdit(QsciScintilla):
 			line = self.getCursorPosition()[0]
 		
 		if self.markersAtLine(line) != 0:
-			self.markerDelete(line, self.ARROW_MARKER_NUM)
+			self.markerDelete(line, self.BOOKMARK_MARKER_NUM)
 			self.bookmarks.remove(line)
 		else:
-			self.markerAdd(line, self.ARROW_MARKER_NUM)
+			self.markerAdd(line, self.BOOKMARK_MARKER_NUM)
 			self.bookmarks.add(line)
 			
 			
@@ -232,9 +232,9 @@ class NippyEdit(QsciScintilla):
 		curLine, curPos = self.getCursorPosition()
 		
 		# wrap around if we don't go anywhere
-		line = self.markerFindNext(curLine + 1, self.ARROW_MARKER_MASK)
+		line = self.markerFindNext(curLine + 1, self.BOOKMARK_MARKER_MASK)
 		if line == -1:
-			line = self.markerFindNext(0, self.ARROW_MARKER_MASK)
+			line = self.markerFindNext(0, self.BOOKMARK_MARKER_MASK)
 			
 		self.goto_line(line)
 	
@@ -243,9 +243,9 @@ class NippyEdit(QsciScintilla):
 		curLine, curPos = self.getCursorPosition()
 		
 		# wrap around if we don't go anywhere
-		line = self.markerFindPrevious(curLine - 1, self.ARROW_MARKER_MASK)
+		line = self.markerFindPrevious(curLine - 1, self.BOOKMARK_MARKER_MASK)
 		if line == -1:
-			line = self.markerFindPrevious(self.lines() - 1, self.ARROW_MARKER_MASK)
+			line = self.markerFindPrevious(self.lines() - 1, self.BOOKMARK_MARKER_MASK)
 		
 		self.goto_line(line)
 	
