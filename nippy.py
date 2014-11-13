@@ -137,6 +137,7 @@ class NippyEdit(QsciScintilla):
 		
 		# get a file to open
 		fname = qgui.QFileDialog.getOpenFileName(self, 'Open file', '.')
+		fname = str(fname)
 		
 		# load the file if valid
 		if fname:
@@ -144,27 +145,34 @@ class NippyEdit(QsciScintilla):
 				# load new file
 				self.setText(open(fname).read())
 				
-				# clear everything...
+				self.fileN = os.path.split(fname)[-1]
+				self.path = fname
 			except:
 				print "Oops! Something went wrong when trying to load '%s'" % (fname)
 			
 	# Save File
 	def save_file(self):
 		# if file doesn't exist, ask where to save...
-		if not (os.path and os.path.exists(self.path)):
+		if not (self.path and os.path.exists(self.path)):
 			# get filename
 			fname = qgui.QFileDialog.getSaveFileName(self, "Save File", 
 					"./%s" % (self.fileN),
 					"Text/Code Files (*.c, *.h, *.py, *.txt)");
+			fname = str(fname)
+		else:
+			# use saved file's path
+			fname = self.path
 			
-			if fname:
-				ff = QFile(fname)
-				if not ff.open(QIODevice.WriteOnly | QIODevice.Text):
-					return
-				
-				print QDir.currentPath(), ff.fileName()
-				ok = self.write(ff)
-				print ok
+		# write the file if the path is valid
+		if fname:
+			ff = qcore.QFile(fname)
+			if not ff.open(qcore.QIODevice.WriteOnly | qcore.QIODevice.Text):
+				return
+			
+			print qcore.QDir.currentPath(), ff.fileName()
+			ok = self.write(ff)
+			print ok
+	
 	
 	# Click in margin - For now, this is for bookmarking only
 	def on_margin_clicked(self, nmargin, nline, modifiers):
