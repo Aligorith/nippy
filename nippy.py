@@ -122,7 +122,7 @@ class NippyEdit(QsciScintilla):
 			'Ctrl+O' 		: self.open_file,
 			'Ctrl+S'		: self.save_file,
 			
-			'F1'			: self.open_file,
+			'F1'			: self.open_file, # XXX: this should be reserved for our "smart" file opening tool
 			
 			# view
 			# TODO: normal pluskey doesn't work
@@ -144,6 +144,10 @@ class NippyEdit(QsciScintilla):
 			shortcut.activated.connect(cmd)
 	
 	# Event Handling =====================================================
+	
+	# File IO ------------------------------------------------------------
+	# XXX: this should be done one level up
+	# XXX: these need reviewing to ensure that no text munging takes place
 	
 	# Create a new file
 	def new_file(self):
@@ -187,6 +191,7 @@ class NippyEdit(QsciScintilla):
 			fname = self.path
 			
 		# write the file if the path is valid
+		# TODO: need a way of adding an extra newline at end
 		if fname:
 			ff = qcore.QFile(fname)
 			if not ff.open(qcore.QIODevice.WriteOnly | qcore.QIODevice.Text):
@@ -196,6 +201,7 @@ class NippyEdit(QsciScintilla):
 			ok = self.write(ff)
 			print ok
 	
+	# Bookmarks Handling -------------------------------------------------
 	
 	# Click in margin - For now, this is for bookmarking only
 	def on_margin_clicked(self, nmargin, nline, modifiers):
@@ -214,8 +220,9 @@ class NippyEdit(QsciScintilla):
 		else:
 			self.markerAdd(line, self.BOOKMARK_MARKER_NUM)
 			self.bookmarks.add(line)
-			
-			
+	
+	# Go To... -----------------------------------------------------------
+	
 	# Helper method to go to a line
 	# < line: (int) zero-based index for line number to navigate to
 	def goto_line(self, line):
@@ -269,6 +276,10 @@ class NippyEdit(QsciScintilla):
 			# NOTE: for display, the numbers start from 1, but the API starts from 0
 			self.goto_line(line - 1)
 			self.setFocus(True)
+			
+	# Editing Tools ------------------------------------------------------
+	
+	
 
 
 ################################################
