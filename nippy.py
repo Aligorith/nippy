@@ -56,33 +56,39 @@ class NippyEdit(QsciScintilla):
 		# Margin 0 is used for line numbers
 		fontmetrics = QFontMetrics(font)
 		self.setMarginsFont(font)
-		self.setMarginWidth(0, fontmetrics.width("00000") + 6)
+		self.setMarginWidth(0, fontmetrics.width("0000") + 6)
 		self.setMarginLineNumbers(0, True)
-		self.setMarginsBackgroundColor(QColor("#dddddd"))
-
+		self.setMarginsBackgroundColor(QColor("#dedede"))
+		
 		# Clickable margin 1 for showing markers
 		self.setMarginSensitivity(1, True)
 		self.marginClicked.connect(self.on_margin_clicked)
 		self.markerDefine(QsciScintilla.RightArrow, self.ARROW_MARKER_NUM)
 		self.setMarkerBackgroundColor(QColor("#ee1111"), self.ARROW_MARKER_NUM)
-
+		
 		# Brace matching: enable for a brace immediately before or after
 		# the current position
 		self.setBraceMatching(QsciScintilla.SloppyBraceMatch)
-
+		
 		# Current line visible with special background color
 		self.setCaretLineVisible(True)
-		self.setCaretLineBackgroundColor(QColor("#e8e8ff"))
+		self.setCaretLineBackgroundColor(QColor("#eeeeee"))
 		
 		# Indent guides
 		#SETINDENTATIONGUIDES
 		self.setIndentationGuides(True)
+		self.setIndentationGuidesForegroundColor(QColor("#aaaaaa"))
+		
+		self.setWhitespaceVisibility(QsciScintilla.WsVisible)
+		self.setWhitespaceForegroundColor(QColor("#eeeeee"))
 		
 		# Indent size defaults
 		self.setIndentationsUseTabs(True) # XXX: auto-detect - or per-file type
 		
 		self.setIndentationWidth(4) # used for the size of indent steps - hardcoded to my liking - make this per-file type
 		self.setTabWidth(4) # used for the size of tabs - hardcoded to my liking - make this per-file type
+		
+		self.setAutoIndent(True)
 	
 	# Initialise placeholder settings
 	def temp_init_settings(self):
@@ -97,7 +103,8 @@ class NippyEdit(QsciScintilla):
 		self.SendScintilla(QsciScintilla.SCI_STYLESETFONT, 1, 'Courier')
 		
 		# not too small
-		self.setMinimumSize(400, 450)
+		#self.setMinimumSize(400, 450)
+		self.setMinimumSize(500, 450)
 	
 	# Event Binding ======================================================
 	
