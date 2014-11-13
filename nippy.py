@@ -68,7 +68,8 @@ class NippyEdit(QsciScintilla):
 		# Clickable margin 1 for showing markers
 		self.setMarginSensitivity(1, True)
 		self.marginClicked.connect(self.on_margin_clicked)
-		self.markerDefine(QsciScintilla.RightArrow, self.BOOKMARK_MARKER_NUM)
+		#self.markerDefine(QsciScintilla.RightArrow, self.BOOKMARK_MARKER_NUM)
+		self.markerDefine(QsciScintilla.RightTriangle, self.BOOKMARK_MARKER_NUM)
 		self.setMarkerBackgroundColor(QColor("#ee1111"), self.BOOKMARK_MARKER_NUM)
 		
 		# Brace matching: enable for a brace immediately before or after
