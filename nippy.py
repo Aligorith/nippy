@@ -20,6 +20,7 @@ signal.signal(signal.SIGINT, signal.SIG_DFL)
 ################################################
 # Nippy Editor
 
+# XXX: this should only be a single editor tab, contained within the larger editor
 class NippyEdit(QsciScintilla):
 	BOOKMARK_MARKER_NUM = 8
 	BOOKMARK_MARKER_MASK = 256 # XXX: hardcoded for now - dunno why!
@@ -153,14 +154,36 @@ class NippyEdit(QsciScintilla):
 	# XXX: this should be done one level up
 	# XXX: these need reviewing to ensure that no text munging takes place
 	
+	# Load specified file
+	# < path: (str) path to file to load, including the file name
+	def load_file(self, path):
+		if path and os.path.exists(path):
+			# load the file if it exists...
+			ff = qcore.QFile(path)
+			if not ff.open(qcore.QIODevice.ReadOnly):
+				# TODO: print warning!
+				return
+			
+			print qcore.QDir.currentPath(), ff.fileName()
+			ok = self.read(ff)
+			print ok
+			
+			# store refs to file
+			self.fileN = os.path.split(str(path))[-1]
+			self.path  = path
+		else:
+			# generate an empty file to start from
+			self.setText("")
+			
+			self.fileN = "untitled" # XXX: file number?
+			self.path  = None
+			
+		# clear old data - this shouldn't need to happen, since these should be single-use
+		self.bookmarks.clear()
+	
 	# Create a new file
 	def new_file(self):
-		self.fileN = "untitled.txt"
-		self.path = None
-		
-		self.bookmarks.clear()
-		
-		self.setText("")
+		self.load_file(None)
 	
 	# Open file
 	def open_file(self):
@@ -168,18 +191,10 @@ class NippyEdit(QsciScintilla):
 		
 		# get a file to open
 		fname = qgui.QFileDialog.getOpenFileName(self, 'Open file', '.')
-		fname = str(fname)
 		
 		# load the file if valid
 		if fname:
-			try:
-				# load new file
-				self.setText(open(fname).read())
-				
-				self.fileN = os.path.split(fname)[-1]
-				self.path = fname
-			except:
-				print "Oops! Something went wrong when trying to load '%s'" % (fname)
+			self.load_file(fname)
 			
 	# Save File
 	def save_file(self):
@@ -198,7 +213,7 @@ class NippyEdit(QsciScintilla):
 		# TODO: need a way of adding an extra newline at end
 		if fname:
 			ff = qcore.QFile(fname)
-			if not ff.open(qcore.QIODevice.WriteOnly | qcore.QIODevice.Text):
+			if not ff.open(qcore.QIODevice.WriteOnly):
 				return
 			
 			print qcore.QDir.currentPath(), ff.fileName()
@@ -298,6 +313,11 @@ if __name__ == "__main__":
 	app = qgui.QApplication(sys.argv)
 	
 	editor = NippyEdit()
-	editor.show()
 	
+	if len(sys.argv) > 1:
+		for fileN in sys.argv[1:]:
+			editor.load_file(fileN)
+			break; # XXX: we currently only allow a single editor
+	
+	editor.show()
 	app.exec_()
