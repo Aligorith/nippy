@@ -139,6 +139,8 @@ class NippyEdit(QsciScintilla):
 			'Shift+F2'		: self.goto_prev_bookmark,
 			
 			# line operations
+			'Ctrl+Shift+Up'		: self.move_line_up,
+			'Ctrl+Shift+Down'	: self.move_line_down,
 		}
 		
 		for key, cmd in self.keymap.items():
@@ -281,6 +283,13 @@ class NippyEdit(QsciScintilla):
 			
 	# Editing Tools ------------------------------------------------------
 	
+	# Move line up
+	def move_line_up(self):
+		self.SendScintilla(QsciScintilla.SCI_MOVESELECTEDLINESUP, 0, 0)
+		
+	# Move line down
+	def move_line_down(self):
+		self.SendScintilla(QsciScintilla.SCI_MOVESELECTEDLINESDOWN, 0, 0)
 
 
 ################################################
