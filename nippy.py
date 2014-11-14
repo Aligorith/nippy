@@ -137,6 +137,9 @@ class NippyEdit(QsciScintilla):
 			
 			'F2'			: self.goto_next_bookmark,
 			'Shift+F2'		: self.goto_prev_bookmark,
+			
+			# line operations
+			'Ctrl+D'		: self.duplicate_line,
 		}
 		
 		for key, cmd in self.keymap.items():
@@ -279,7 +282,10 @@ class NippyEdit(QsciScintilla):
 			
 	# Editing Tools ------------------------------------------------------
 	
-	
+	# Duplicate line
+	def duplicate_line(self):
+		# TODO: when multiple are selected, start on a new line?
+		self.SendScintilla(SCI_LINEDUPLICATE)
 
 
 ################################################
