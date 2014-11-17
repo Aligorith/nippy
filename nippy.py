@@ -9,7 +9,9 @@ import os
 
 import PyQt4.QtCore as qcore
 import PyQt4.QtGui as qgui
-from PyQt4.Qsci import QsciScintilla
+
+#from PyQt4.Qsci import QsciScintilla
+from PyQt4.Qsci import *
 
 from PyQt4.QtGui import QColor, QFont, QFontMetrics
 
@@ -100,16 +102,6 @@ class NippyEdit(QsciScintilla):
 	
 	# Initialise placeholder settings
 	def temp_init_settings(self):
-		from PyQt4.Qsci import QsciLexerPython
-		
-		# Set Python lexer
-		# Set style for Python comments (style number 1) to a fixed-width
-		# courier.
-		lexer = QsciLexerPython()
-		lexer.setDefaultFont(self.font())
-		self.setLexer(lexer)
-		self.SendScintilla(QsciScintilla.SCI_STYLESETFONT, 1, 'Courier')
-		
 		# not too small
 		#self.setMinimumSize(400, 450)
 		self.setMinimumSize(500, 450)
@@ -158,6 +150,7 @@ class NippyEdit(QsciScintilla):
 	# Load specified file
 	# < path: (str) path to file to load, including the file name
 	def load_file(self, path):
+		# load the file...
 		if path and os.path.exists(path):
 			# load the file if it exists...
 			ff = qcore.QFile(path)
@@ -182,6 +175,80 @@ class NippyEdit(QsciScintilla):
 			
 		# clear old data - this shouldn't need to happen, since these should be single-use
 		self.bookmarks.clear()
+		
+		# configure lexer and formatting
+		self.detect_language()
+	
+	# Auto-detect language used, and set lexer + formatting settings accordingly
+	def detect_language(self):
+		if self.fileN:
+			# get extension
+			name, ext = os.path.splitext(str(self.fileN))
+			
+			if ext in ('.c', '.h', '.cpp', '.cxx', '.hpp'):
+				# C/C++
+				lexer = QsciLexerCPP()
+				do_wrap = False
+			elif ext in ('.py', '.pyw'):
+				# Python
+				lexer = QsciLexerPython()
+				do_wrap = False
+			elif ext in ('.tex'):
+				# Latex
+				lexer = QsciLexerTeX()
+				do_wrap = True
+			elif ext in ('.java'):
+				# Java
+				lexer = QsciLexerJava()
+				do_wrap = False
+			elif ext in ('.cs'):
+				# CSharp
+				lexer = QsciLexerCSharp()
+				do_wrap = False
+			elif ext in ('.bat'):
+				# Batch Script
+				lexer = QsciLexerBatch()
+				do_wrap = False
+			elif ext in ('.sh'):
+				# Bash Script
+				lexer = QsciLexerBash()
+				do_wrap = False
+			elif (ext == '.cmake') or (name == 'CMakeLists'):
+				# CMake
+				lexer = QsciLexerCMake()
+				do_wrap = False
+				
+			# TODO: add QML, Markdown, RestructuredTxt
+			
+			elif ext in ('.txt', '.md', '.rst'):
+				# Text-like formats
+				lexer = None # XXX
+				do_wrap = True
+			
+			else:
+				# no lexer
+				lexer = None
+				do_wrap = False
+		else:
+			# no lexer - no file type set...
+			lexer = None
+		
+		# set lexer
+		if lexer:
+			lexer.setDefaultFont(self.font())
+			self.setLexer(lexer)
+			
+			# Set style for comments (style number 1) to a fixed-width courier
+			self.SendScintilla(QsciScintilla.SCI_STYLESETFONT, 1, 'Courier')
+		else:
+			self.setLexer(None)
+			
+		# set word-wrapping settings
+		if do_wrap:
+			self.setWrapMode(QsciScintilla.WrapWord)
+		else:
+			self.setWrapMode(QsciScintilla.WrapNone)
+		
 	
 	# Create a new file
 	def new_file(self):
@@ -206,6 +273,8 @@ class NippyEdit(QsciScintilla):
 			path = qgui.QFileDialog.getSaveFileName(self, "Save File", 
 					"./%s" % (self.fileN),
 					"Text/Code Files (*.c, *.h, *.py, *.txt)")
+					
+			self.path = path
 		else:
 			# use saved file's path
 			path = self.path
