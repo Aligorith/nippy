@@ -62,16 +62,17 @@ class NippyEdit(QsciScintilla):
 		# Margin 0 is used for line numbers
 		fontmetrics = QFontMetrics(font)
 		self.setMarginsFont(font)
-		self.setMarginWidth(0, fontmetrics.width("0000") + 6)
+		self.setMarginWidth(0, fontmetrics.width("0000") + 8)
 		self.setMarginLineNumbers(0, True)
 		self.setMarginsBackgroundColor(QColor("#dedede"))
+		self.setMarginsForegroundColor(QColor("#555555"))
 		
 		# Clickable margin 1 for showing markers
 		self.setMarginSensitivity(1, True)
 		self.marginClicked.connect(self.on_margin_clicked)
-		#self.markerDefine(QsciScintilla.RightArrow, self.BOOKMARK_MARKER_NUM)
-		self.markerDefine(QsciScintilla.RightTriangle, self.BOOKMARK_MARKER_NUM)
-		self.setMarkerBackgroundColor(QColor("#ee1111"), self.BOOKMARK_MARKER_NUM)
+		self.markerDefine(QsciScintilla.Circle, self.BOOKMARK_MARKER_NUM)
+		self.setMarkerBackgroundColor(QColor("#FFD54D"), self.BOOKMARK_MARKER_NUM)
+		self.setMarkerForegroundColor(QColor("#BB663D"), self.BOOKMARK_MARKER_NUM)
 		
 		# Brace matching: enable for a brace immediately before or after
 		# the current position
