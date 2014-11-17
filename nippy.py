@@ -162,11 +162,12 @@ class NippyEdit(QsciScintilla):
 			ff = qcore.QFile(path)
 			if not ff.open(qcore.QIODevice.ReadOnly):
 				# TODO: print warning!
+				print "ERROR: Could not open file '%s'" % (path)
 				return
 			
-			print qcore.QDir.currentPath(), ff.fileName()
+			#print qcore.QDir.currentPath(), ff.fileName()
 			ok = self.read(ff)
-			print ok
+			#print ok
 			
 			# store refs to file
 			self.fileN = os.path.split(str(path))[-1]
@@ -201,24 +202,24 @@ class NippyEdit(QsciScintilla):
 		# if file doesn't exist, ask where to save...
 		if not (self.path and os.path.exists(self.path)):
 			# get filename
-			fname = qgui.QFileDialog.getSaveFileName(self, "Save File", 
+			path = qgui.QFileDialog.getSaveFileName(self, "Save File", 
 					"./%s" % (self.fileN),
-					"Text/Code Files (*.c, *.h, *.py, *.txt)");
-			fname = str(fname)
+					"Text/Code Files (*.c, *.h, *.py, *.txt)")
 		else:
 			# use saved file's path
-			fname = self.path
+			path = self.path
 			
 		# write the file if the path is valid
 		# TODO: need a way of adding an extra newline at end
-		if fname:
-			ff = qcore.QFile(fname)
+		if path:
+			ff = qcore.QFile(path)
 			if not ff.open(qcore.QIODevice.WriteOnly):
+				print "ERROR: Could not open file '%s' for saving" % (path)
 				return
 			
-			print qcore.QDir.currentPath(), ff.fileName()
+			#print qcore.QDir.currentPath(), ff.fileName()
 			ok = self.write(ff)
-			print ok
+			#print ok
 	
 	# Bookmarks Handling -------------------------------------------------
 	
