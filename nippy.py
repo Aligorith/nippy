@@ -185,7 +185,7 @@ class NippyEdit(QsciScintilla):
 			# get extension
 			name, ext = os.path.splitext(str(self.fileN))
 			
-			if ext in ('.c', '.h', '.cpp', '.cxx', '.hpp'):
+			if ext in ('.c', '.h', '.cpp', '.cc', '.cxx', '.hpp'):
 				# C/C++
 				lexer = QsciLexerCPP()
 				do_wrap = False
@@ -218,9 +218,9 @@ class NippyEdit(QsciScintilla):
 				lexer = QsciLexerCMake()
 				do_wrap = False
 				
-			# TODO: add QML, Markdown, RestructuredTxt
+			# TODO: add QML, Markdown, RestructuredTxt, YAML
 			
-			elif ext in ('.txt', '.md', '.rst'):
+			elif ext in ('.txt', '.md', '.rst', '.yml'):
 				# Text-like formats
 				lexer = None # XXX
 				do_wrap = True
@@ -270,9 +270,22 @@ class NippyEdit(QsciScintilla):
 		# if file doesn't exist, ask where to save...
 		if not (self.path and os.path.exists(self.path)):
 			# get filename
+			extension_types = ';;'.join([
+				"All files (*.*)",
+				"Normal text file (*.txt)",
+				"Batch script (*.bat)",
+				"C source file (*.c, *.h)",
+				"C++ source file (*.cpp, *.h, *.cc, *.cxx, *.hpp)",
+				"C# source file (*.cs)",
+				"LaTeX source (*.tex)",
+				"Java source file (*.java)",
+				"Python source file (*.py, *.pyw)",
+				"Shell script (*.sh)",
+			])
+			
 			path = qgui.QFileDialog.getSaveFileName(self, "Save File", 
 					"./%s" % (self.fileN),
-					"Text/Code Files (*.c, *.h, *.py, *.txt)")
+					extension_types, "Normal text file (*.txt)")
 					
 			self.path = path
 		else:
