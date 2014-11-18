@@ -15,6 +15,8 @@ from PyQt4.Qsci import *
 
 from PyQt4.QtGui import QColor, QFont, QFontMetrics
 
+from nippyedit import filetypes
+
 
 import signal
 signal.signal(signal.SIGINT, signal.SIG_DFL)
@@ -185,57 +187,23 @@ class NippyEdit(QsciScintilla):
 	
 	# Auto-detect language used, and set lexer + formatting settings accordingly
 	def detect_language(self):
-		if self.fileN:
-			# get extension
-			name, ext = os.path.splitext(str(self.fileN))
-			
-			if ext in ('.c', '.h', '.cpp', '.cc', '.cxx', '.hpp'):
-				# C/C++
-				lexer = QsciLexerCPP()
-				do_wrap = False
-			elif ext in ('.py', '.pyw'):
-				# Python
-				lexer = QsciLexerPython()
-				do_wrap = False
-			elif ext in ('.tex'):
-				# Latex
-				lexer = QsciLexerTeX()
-				do_wrap = True
-			elif ext in ('.java'):
-				# Java
-				lexer = QsciLexerJava()
-				do_wrap = False
-			elif ext in ('.cs'):
-				# CSharp
-				lexer = QsciLexerCSharp()
-				do_wrap = False
-			elif ext in ('.bat'):
-				# Batch Script
-				lexer = QsciLexerBatch()
-				do_wrap = False
-			elif ext in ('.sh'):
-				# Bash Script
-				lexer = QsciLexerBash()
-				do_wrap = False
-			elif (ext == '.cmake') or (name == 'CMakeLists'):
-				# CMake
-				lexer = QsciLexerCMake()
-				do_wrap = False
-				
-			# TODO: add QML, Markdown, RestructuredTxt, YAML
-			
-			elif ext in ('.txt', '.md', '.rst', '.yml'):
-				# Text-like formats
-				lexer = None # XXX
-				do_wrap = True
-			
+		# get filetype stuff...
+		ft = filetypes.get_filetype(self.fileN)
+		
+		if ft:
+			# recognised format
+			lexer_type = ft.get('lexer', None)
+			if lexer_type:
+				lexer = lexer_type()
 			else:
-				# no lexer
 				lexer = None
-				do_wrap = False
+			
+			do_wrap = ft.get('wrap', False)
 		else:
-			# no lexer - no file type set...
-			lexer = None
+			# unrecognised format
+			lexer   = None
+			do_wrap = False
+			
 		
 		# set lexer
 		if lexer:
@@ -276,24 +244,10 @@ class NippyEdit(QsciScintilla):
 		# if file doesn't exist, ask where to save...
 		if not (self.path and os.path.exists(self.path)):
 			# get filename
-			extension_types = ';;'.join([
-				"All files (*.*)",
-				"Normal text file (*.txt)",
-				"Batch script (*.bat)",
-				"C source file (*.c, *.h)",
-				"C++ source file (*.cpp, *.h, *.cc, *.cxx, *.hpp)",
-				"C# source file (*.cs)",
-				"LaTeX source (*.tex)",
-				"Java source file (*.java)",
-				"Python source file (*.py, *.pyw)",
-				"Shell script (*.sh)",
-			])
-			
 			path = qgui.QFileDialog.getSaveFileName(self, "Save File", 
 					"./%s" % (self.fileN),
-					extension_types, "Normal text file (*.txt)")
-					
-			self.path = path
+					filetypes.FILETYPES_DLG_FILTER_STR,
+					filetypes.FILETYPES_DLG_FILTER_DEFAULT)
 		else:
 			# use saved file's path
 			path = self.path
