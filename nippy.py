@@ -99,12 +99,16 @@ class NippyEdit(QsciScintilla):
 		self.setTabWidth(4) # used for the size of tabs - hardcoded to my liking - make this per-file type
 		
 		self.setAutoIndent(True)
+		
 	
 	# Initialise placeholder settings
 	def temp_init_settings(self):
 		# not too small
 		#self.setMinimumSize(400, 450)
 		self.setMinimumSize(500, 450)
+		
+		# set default window title
+		self.setWindowTitle("Nippy")
 	
 	# Event Binding ======================================================
 	
@@ -253,6 +257,7 @@ class NippyEdit(QsciScintilla):
 	# Create a new file
 	def new_file(self):
 		self.load_file(None)
+		self.setWindowTitle("untitled - Nippy")
 	
 	# Open file
 	def open_file(self):
@@ -264,6 +269,7 @@ class NippyEdit(QsciScintilla):
 		# load the file if valid
 		if fname:
 			self.load_file(fname)
+			self.setWindowTitle("%s - Nippy" % (self.fileN))
 			
 	# Save File
 	def save_file(self):
@@ -303,6 +309,9 @@ class NippyEdit(QsciScintilla):
 			#print qcore.QDir.currentPath(), ff.fileName()
 			ok = self.write(ff)
 			#print ok
+			
+		# update window title
+		self.setWindowTitle("%s - Nippy" % (self.fileN))
 	
 	# Bookmarks Handling -------------------------------------------------
 	
