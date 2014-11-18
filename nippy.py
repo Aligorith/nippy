@@ -264,6 +264,13 @@ class NippyEdit(QsciScintilla):
 			ok = self.write(ff)
 			#print ok
 			
+			# save the new path + filename, since it could be different
+			self.fileN = os.path.split(str(path))[-1]
+			self.path  = str(path)
+			
+			# XXX: only do this if something changed...
+			self.detect_language()
+			
 		# update window title
 		self.setWindowTitle("%s - Nippy" % (self.fileN))
 	
