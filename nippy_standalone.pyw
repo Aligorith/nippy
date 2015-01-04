@@ -107,7 +107,7 @@ class NippyEdit(QsciScintilla):
 	def temp_init_settings(self):
 		# not too small
 		#self.setMinimumSize(400, 450)
-		self.setMinimumSize(500, 450)
+		self.setMinimumSize(750, 600)
 		
 		# set default window title
 		self.setWindowTitle("Nippy")
@@ -211,7 +211,7 @@ class NippyEdit(QsciScintilla):
 			self.setLexer(lexer)
 			
 			# Set style for comments (style number 1) to a fixed-width courier
-			self.SendScintilla(QsciScintilla.SCI_STYLESETFONT, 1, 'Courier')
+			self.SendScintilla(QsciScintilla.SCI_STYLESETFONT, 1, 'Consolas')
 		else:
 			self.setLexer(None)
 			
