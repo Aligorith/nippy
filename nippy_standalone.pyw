@@ -235,8 +235,14 @@ class NippyEdit(QsciScintilla):
 	def open_file(self):
 		# TODO: warn if existing file is not saved...
 		
+		# get path to start from
+		if self.path:
+			path = self.path
+		else:
+			path = "."
+		
 		# get a file to open
-		fname = qgui.QFileDialog.getOpenFileName(self, 'Open file', '.')
+		fname = qgui.QFileDialog.getOpenFileName(self, 'Open file', path)
 		
 		# load the file if valid
 		if fname:
