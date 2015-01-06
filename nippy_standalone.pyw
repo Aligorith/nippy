@@ -364,9 +364,13 @@ class NippyEdit(QsciScintilla):
 	
 	# Find tool
 	def find_popup(self):
-		# query string to use - determined by what's under the cursor
-		# XXX: 
-		query = ""
+		# query string to use
+		# - use selected text if available, 
+		# - otherwise, don't guess, as then it needs to be removed before trying again
+		if self.hasSelectedText():
+			query = self.selectedText()
+		else:
+			query = ""
 		
 		# show the dialog
 		dlg = find_dialog.FindDialog(self, query)
