@@ -16,6 +16,7 @@ from PyQt4.Qsci import *
 from PyQt4.QtGui import QColor, QFont, QFontMetrics
 
 from nippyedit import filetypes
+from nippyedit import find_dialog
 
 
 import signal
@@ -62,7 +63,7 @@ class NippyEdit(QsciScintilla):
 		font.setPointSize(10)
 		self.setFont(font)
 		self.setMarginsFont(font)
-
+		
 		# Margin 0 is used for line numbers
 		fontmetrics = QFontMetrics(font)
 		self.setMarginsFont(font)
@@ -131,6 +132,9 @@ class NippyEdit(QsciScintilla):
 			
 			# go to line
 			'Ctrl+G'		: self.goto_line_tool,
+			
+			# find
+			'Ctrl+F'		: self.find_popup,
 			
 			# go to marker
 			'Ctrl+F2'		: self.toggle_bookmark,
@@ -350,6 +354,20 @@ class NippyEdit(QsciScintilla):
 			self.goto_line(line - 1)
 			self.setFocus(True)
 			
+	# Find Tools ---------------------------------------------------------
+	
+	# Find tool
+	def find_popup(self):
+		# query string to use - determined by what's under the cursor
+		# XXX: 
+		query = ""
+		
+		# show the dialog
+		dlg = find_dialog.FindDialog(self, query)
+		dlg.show()
+		dlg.raise_() # XXX
+		dlg.activateWindow()
+	
 	# Editing Tools ------------------------------------------------------
 	
 	# Move line up
