@@ -239,8 +239,10 @@ class NippyEdit(QsciScintilla):
 		# set word-wrapping settings
 		if do_wrap:
 			self.setWrapMode(QsciScintilla.WrapWord)
+			self.setWrapVisualFlags(QsciScintilla.WrapFlagByText)
 		else:
 			self.setWrapMode(QsciScintilla.WrapNone)
+			self.setWrapVisualFlags(QsciScintilla.WrapFlagNone)
 		
 	
 	# Create a new file
