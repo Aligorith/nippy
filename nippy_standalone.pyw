@@ -45,6 +45,7 @@ class NippyEdit(QsciScintilla):
 		# make editor sane
 		self.setup_ui()
 		self.bind_events()
+		self.bind_editor_events()
 		
 		# configure WIP placeholder stuff
 		self.temp_init_settings()
@@ -115,7 +116,7 @@ class NippyEdit(QsciScintilla):
 	
 	# Event Binding ======================================================
 	
-	# Bind shortcuts
+	# Bind shortcuts (general)
 	def bind_events(self):
 		self.keymap = {
 			# file management
@@ -150,6 +151,22 @@ class NippyEdit(QsciScintilla):
 		for key, cmd in self.keymap.items():
 			shortcut = qgui.QShortcut(qgui.QKeySequence(key), self)
 			shortcut.activated.connect(cmd)
+	
+	# Bind shortcuts (Scintilla specific)
+	def bind_editor_events(self):
+		cs = self.standardCommands()
+		#print "Binding editor events"
+		
+		# Override "Home" and "End" mappings to take word wrapping into account
+		# (The defaults are really annoying to work with, as they jump to the
+		#  start of each physical line, not the virtual lines that we know of)
+		cs.find(QsciCommand.VCHomeWrap).setKey(qcore.Qt.Key_Home)
+		cs.find(QsciCommand.VCHomeWrapExtend).setKey(qcore.Qt.Key_Home | qcore.Qt.ShiftModifier)
+		
+		cs.find(QsciCommand.LineEndWrap).setKey(qcore.Qt.Key_End)
+		cs.find(QsciCommand.LineEndWrapExtend).setKey(qcore.Qt.Key_End | qcore.Qt.ShiftModifier)
+		
+		# TODO: Bind the line up/down operators here too...
 	
 	# Event Handling =====================================================
 	
